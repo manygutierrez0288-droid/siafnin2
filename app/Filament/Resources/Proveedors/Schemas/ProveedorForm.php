@@ -11,14 +11,11 @@ class ProveedorForm
     {
         return $schema
             ->components([
-      
-
-                TextInput::make('nombre')   ->required(),
-                TextInput::make('telefono'),
-                TextInput::make('direccion'),
-                TextInput::make('email'),
-                TextInput::make('numero_ruc'),
-                    
+                TextInput::make('nombre')->label('Nombre')->required(),
+                TextInput::make('numero_ruc')->label('RUC'),
+                TextInput::make('telefono')->label('Teléfono'),
+                TextInput::make('email')->label('Email')->email(),
+                TextInput::make('direccion')->label('Dirección'),
             ]);
     }
 }
