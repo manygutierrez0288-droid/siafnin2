@@ -1,0 +1,287 @@
+/////////////////////////////////////////////////////////
+//                 USUARIOS y ROLES
+/////////////////////////////////////////////////////////
+
+Table usuarios {
+  idUsuario integer [pk, increment]
+  nombre varchar(100) [not null]
+  email varchar(100) [unique, not null]
+  password_hash varchar(255) [not null]
+  idUsuarioCreacion integer [not null]
+  fechaCreacion datetime [default: `now()`]
+  idUsuarioUltimaModificacion integer [null]
+  fechaUltimaModificacion datetime [null]
+  activo boolean [default: true]
+}
+
+Table roles {
+  idRol integer [pk, increment]
+  nombre varchar(50) [unique, not null]
+}
+
+Table usuario_rol {
+  idUsuario integer
+  idRol integer
+  primary key (idUsuario, idRol)
+}
+
+Ref: usuarios.idUsuario < usuario_rol.idUsuario
+Ref: roles.idRol < usuario_rol.idRol
+
+
+/////////////////////////////////////////////////////////
+//                 CATÁLOGOS BÁSICOS
+/////////////////////////////////////////////////////////
+
+Table departamentos {
+  idDepartamento integer [pk, increment]
+  nombre varchar(100) [unique, not null]
+  activo boolean [default: true]
+}
+
+Table ubicaciones {
+  idUbicacion integer [pk, increment]
+  nombre varchar(100) [not null]
+  descripcion text [null]
+  activo boolean [default: true]
+}
+
+Table categorias {
+  idCategoria integer [pk, increment]
+  nombre varchar(100) [unique, not null]
+  activo boolean [default: true]
+}
+
+Table fuentes {
+  idFuente integer [pk, increment]
+  nombre varchar(100) [unique, not null]
+}
+
+Table proveedores {
+  idProveedor integer [pk, increment]
+  nombre varchar(100) [not null]
+  numero_ruc varchar(20) [unique]
+  telefono varchar(20) [null]
+  email varchar(100) [null]
+  direccion text [null]
+  activo boolean [default: true]
+}
+
+Table cargos {
+  idCargo integer [pk, increment]
+  nombre varchar(100) [not null, unique]
+  descripcion text [null]
+  activo boolean [default: true]
+}
+
+Table personal_responsable {
+  idResponsable integer [pk, increment]
+  nombre varchar(150) [not null]
+  idCargo integer [not null]
+  numero_cedula varchar(20) [unique, not null]
+  telefono varchar(30) [null]
+  email varchar(100) [null]
+  activo boolean [default: true]
+}
+
+Ref: cargos.idCargo < personal_responsable.idCargo
+
+
+/////////////////////////////////////////////////////////
+//                 CATÁLOGOS DE ACTIVOS
+/////////////////////////////////////////////////////////
+
+Table marcas {
+  idMarca integer [pk, increment]
+  nombre varchar(100) [unique, not null]
+}
+
+Table modelos {
+  idModelo integer [pk, increment]
+  nombre varchar(100) [not null]
+  idMarca integer [not null]
+}
+
+Ref: marcas.idMarca < modelos.idMarca
+
+Table estados_activo {
+  idEstado integer [pk, increment]
+  nombre varchar(50) [not null, unique]
+}
+
+Table colores {
+  idColor integer [pk, increment]
+  nombre varchar(50) [not null, unique]
+}
+
+Table tecnicos {
+  idTecnico integer [pk, increment]
+  nombre varchar(150) [not null]
+}
+
+
+/////////////////////////////////////////////////////////
+//                 ACTIVOS FIJOS
+/////////////////////////////////////////////////////////
+
+Table activos_fijos {
+  idActivoFijo integer [pk, increment]
+  nombre varchar(255) [not null]
+
+  idMarca integer [null]
+  idModelo integer [null]
+  idColor integer [null]
+
+  idCategoria integer [not null]
+  idDepartamento integer [not null]
+  idUbicacion integer [not null]
+  idFuente integer [not null]
+  idProveedor integer [null]
+  idResponsable integer [not null]
+  idEstado integer [not null]
+
+  fechaAdquisicion date [not null]
+  valorAdquisicion decimal(12,2) [not null]
+
+  vidaUtilAnios integer [null]
+  valorResidual decimal(12,2) [null]
+  depreciacionAcumulada decimal(12,2) [default: 0]
+
+  idUsuarioCreacion integer [not null]
+  fechaCreacion datetime [default: `now()`]
+  idUsuarioUltimaModificacion integer [null]
+  fechaUltimaModificacion datetime [null]
+}
+
+Ref: marcas.idMarca < activos_fijos.idMarca
+Ref: modelos.idModelo < activos_fijos.idModelo
+Ref: colores.idColor < activos_fijos.idColor
+Ref: categorias.idCategoria < activos_fijos.idCategoria
+Ref: departamentos.idDepartamento < activos_fijos.idDepartamento
+Ref: ubicaciones.idUbicacion < activos_fijos.idUbicacion
+Ref: fuentes.idFuente < activos_fijos.idFuente
+Ref: proveedores.idProveedor < activos_fijos.idProveedor
+Ref: personal_responsable.idResponsable < activos_fijos.idResponsable
+Ref: estados_activo.idEstado < activos_fijos.idEstado
+Ref: usuarios.idUsuario < activos_fijos.idUsuarioCreacion
+
+
+/////////////////////////////////////////////////////////
+//                 BAJAS DE ACTIVOS
+/////////////////////////////////////////////////////////
+
+Table bajas_activos {
+  idBaja integer [pk, increment]
+  idActivoFijo integer [not null]
+  fecha date [not null]
+  motivo text [not null]
+  idUsuario integer [not null]
+  fechaCreacion datetime [default: `now()`]
+}
+
+Ref: activos_fijos.idActivoFijo < bajas_activos.idActivoFijo
+Ref: usuarios.idUsuario < bajas_activos.idUsuario
+
+
+/////////////////////////////////////////////////////////
+//                 CAMBIOS DE ESTADO
+/////////////////////////////////////////////////////////
+
+Table cambios_estado {
+  idCambio integer [pk, increment]
+  idActivoFijo integer [not null]
+  idEstadoAnterior integer [not null]
+  idEstadoNuevo integer [not null]
+  fecha datetime [default: `now()`]
+  idUsuario integer [not null]
+}
+
+Ref: activos_fijos.idActivoFijo < cambios_estado.idActivoFijo
+Ref: estados_activo.idEstado < cambios_estado.idEstadoAnterior
+Ref: estados_activo.idEstado < cambios_estado.idEstadoNuevo
+Ref: usuarios.idUsuario < cambios_estado.idUsuario
+
+
+/////////////////////////////////////////////////////////
+//                 VEHÍCULOS
+/////////////////////////////////////////////////////////
+
+Table vehiculos {
+  idVehiculo integer [pk, increment]
+  placa varchar(20) [unique, not null]
+  numeroMotor varchar(50) [null]
+  chasis varchar(50) [unique, null]
+  anio integer [null]
+  idActivoFijo integer [unique, not null]
+  fechaCreacion datetime [default: `now()`]
+  fechaActualizacion datetime [null]
+}
+
+Ref: activos_fijos.idActivoFijo < vehiculos.idActivoFijo
+
+
+/////////////////////////////////////////////////////////
+//                 MANTENIMIENTOS
+/////////////////////////////////////////////////////////
+
+Table mantenimientos {
+  idMantenimiento integer [pk, increment]
+  idActivoFijo integer [not null]
+  fecha date [not null]
+  descripcion text [not null]
+  costo decimal(12,2) [null]
+
+  idTecnico integer [null]
+  idProveedor integer [null]
+  idEstado integer [not null]
+
+  idUsuario integer [not null]
+  fechaCreacion datetime [default: `now()`]
+}
+
+Ref: activos_fijos.idActivoFijo < mantenimientos.idActivoFijo
+Ref: tecnicos.idTecnico < mantenimientos.idTecnico
+Ref: proveedores.idProveedor < mantenimientos.idProveedor
+Ref: estados_activo.idEstado < mantenimientos.idEstado
+Ref: usuarios.idUsuario < mantenimientos.idUsuario
+
+
+/////////////////////////////////////////////////////////
+//                 MOVIMIENTOS
+/////////////////////////////////////////////////////////
+
+Table movimientos {
+  idMovimiento integer [pk, increment]
+  idActivoFijo integer [not null]
+  idUbicacionOrigen integer [not null]
+  idUbicacionDestino integer [not null]
+  idResponsableOrigen integer [not null]
+  idResponsableDestino integer [not null]
+  fecha datetime [default: `now()`]
+  motivo text [not null]
+  idUsuario integer [not null]
+}
+
+Ref: activos_fijos.idActivoFijo < movimientos.idActivoFijo
+Ref: ubicaciones.idUbicacion < movimientos.idUbicacionOrigen
+Ref: ubicaciones.idUbicacion < movimientos.idUbicacionDestino
+Ref: personal_responsable.idResponsable < movimientos.idResponsableOrigen
+Ref: personal_responsable.idResponsable < movimientos.idResponsableDestino
+Ref: usuarios.idUsuario < movimientos.idUsuario
+
+
+/////////////////////////////////////////////////////////
+//                 AUDITORÍA
+/////////////////////////////////////////////////////////
+
+Table auditoria_activos {
+  idAuditoria integer [pk, increment]
+  idActivoFijo integer [not null]
+  idUsuario integer [not null]
+  tipo varchar(30) [not null]
+  detalle text [null]
+  fecha datetime [default: `now()`]
+}
+
+Ref: activos_fijos.idActivoFijo < auditoria_activos.idActivoFijo
+Ref: usuarios.idUsuario < auditoria_activos.idUsuario
