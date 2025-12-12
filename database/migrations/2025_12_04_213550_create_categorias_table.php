@@ -9,12 +9,16 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
+    //CATALOGO BASICO
+    // TABLA CATEGORIAS//
     public function up(): void
     {
-        Schema::create('fuentes', function (Blueprint $table) {
-        
-    $table->increments('idFuente');
-    $table->string('nombre', 100)->unique();
+        Schema::create('categorias', function (Blueprint $table) {
+            $table->id();
+             $table->string('nombre', 100)->unique();
+            $table->boolean('activo')->default(true);
+            $table->timestamps(); // created_at, updated_at
+            
         });
     }
 
@@ -23,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('fuentes');
+        Schema::dropIfExists('categorias');
     }
 };

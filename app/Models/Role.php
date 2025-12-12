@@ -5,14 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Proveedor extends Model
+class Role extends Model
 {
     use HasFactory;
-    protected $table = 'proveedores';
+    protected $table = 'roles';
 
-    protected $primaryKey = 'idProveedor';
+protected $primaryKey = 'idRol';
 
-    protected $fillable = array('nombre', 'numero_ruc', 'telefono', 'email', 'direccion', 'activo',
+    protected $fillable = ['nombre',
         'idMarca',
         'idModelo',
         'idColor',
@@ -33,15 +33,10 @@ class Proveedor extends Model
         'idUbicacionDestino',
         'idResponsableOrigen',
         'idResponsableDestino',
-    );
+    ];
     
-    public function activosFijos()
+    public function usuarioRol()
     {
-        return $this->hasMany(\App\Models\ActivosFijo::class, 'idProveedor', 'idProveedor');
-    }
-    
-    public function mantenimientos()
-    {
-        return $this->hasMany(\App\Models\Mantenimiento::class, 'idProveedor', 'idProveedor');
+        return $this->hasMany(\App\Models\UsuarioRol::class, 'idRol', 'idRol');
     }
 }

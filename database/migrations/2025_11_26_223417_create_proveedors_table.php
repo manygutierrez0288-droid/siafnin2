@@ -19,6 +19,7 @@ return new class extends Migration
     $table->string('email', 100)->nullable();
     $table->text('direccion')->nullable();
     $table->boolean('activo')->default(true);
+     $table->timestamps(); // created_at, updated_at
         });
     }
 
